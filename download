@@ -1,0 +1,5 @@
+# repoquery --location --show-duplicates --disablerepo '*' --enablerepo kubernetes-unstable --repofrompath 'kubernetes-unstable,https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64-unstable' '*'                                                  
+https://packages.cloud.google.com/yum/pool/bbad6f8b76467d0a5c40fe0f5a1d92500baef49dedff2944e317936b110524eb-kubeadm-1.5.0-0.alpha.0.1534.gcf7301f.x86_64.rpm
+https://packages.cloud.google.com/yum/pool/fac5b4cd036d76764306bd1df7258394b200be4c11f4e3fdd100bfb25a403ed4-kubectl-1.4.0-0.x86_64.rpm
+https://packages.cloud.google.com/yum/pool/c37966352c9d394bf2cc1f755938dfb679aa45ac866d3eb1775d9c9b87d5e177-kubelet-1.4.0-0.x86_64.rpm
+https://packages.cloud.google.com/yum/pool/5ce829590fb4d5c860b80e73d4483b8545496a13f68ff3033ba76fa72632a3b6-kubernetes-cni-0.3.0.1-0.07a8a2.x86_64.rpm
