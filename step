@@ -1,0 +1,157 @@
+Installation Steps:
+Kindly follow below steps on on every nodes.
+
+view sourceprint?
+1.
+#setenforce 0
+1. Set system hostname:
+(You can change hostname according to you nodes.)
+
+view sourceprint?
+1.
+# hostnamectl set-hostname node10.dockerhunt.com
+2. Install and activate iptables and disbale firewalld (as kubernetes and docker uses iptables.)
+
+view sourceprint?
+01.
+# yum install iptables-services.x86_64 -y
+02.
+# systemctl stop firewalld.service
+03.
+# systemctl disable firewalld.service
+04.
+# systemctl mask firewalld.service
+05.
+# systemctl start iptables
+06.
+# systemctl enable iptables
+07.
+# systemctl unmask iptables
+08.
+# iptables -F
+09.
+# service iptables save
+3. Install docker latest stable rpm provided by Docker.
+
+view sourceprint?
+1.
+# yum install -y yum-utils
+2.
+# yum-config-manager –add-repo https://docs.docker.com/engine/installation/linux/repo_files/centos/docker.repo
+3.
+# yum makecache fast
+4.
+# yum install -y docker-engine
+4. Inatll Kubernetes lates stable rpm provided kubernetes.
+
+view sourceprint?
+01.
+# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+02.
+[kubernetes]
+03.
+name=Kubernetes
+04.
+baseurl=http://yum.kubernetes.io/repos/kubernetes-el7-x86_64
+05.
+enabled=1
+06.
+gpgcheck=1
+07.
+repo_gpgcheck=1
+08.
+gpgkey=http://packages.cloud.google.com/yum/doc/yum-key.gpg
+09.
+http://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+10.
+EOF
+11.
+ 
+12.
+# yum install -y docker kubelet kubeadm kubectl kubernetes-cni
+5. Enable and start kubernetes and docker services.
+
+view sourceprint?
+1.
+# systemctl enable docker &amp;amp;amp;amp;amp;amp;amp;amp;&amp;amp;amp;amp;amp;amp;amp;amp; systemctl start docker
+2.
+# systemctl enable kubelet &amp;amp;amp;amp;amp;amp;amp;amp;&amp;amp;amp;amp;amp;amp;amp;amp; systemctl start kubelet
+6. Kindly follow below steps on Kubernetes master Host:
+
+view sourceprint?
+1.
+# kubeadm init –pod-network-cidr=10.244.0.0/16
+7. Below will be the output of kubeadm command:
+
+view sourceprint?
+01.
+[kubeadm] WARNING: kubeadm is in alpha, please do not use it for production clusters.
+02.
+[preflight] Running pre-flight checks
+03.
+[init] Using Kubernetes version: v1.5.2
+04.
+[tokens] Generated token: "4e4f80.fb6c903e351fb64c"
+05.
+[certificates] Generated Certificate Authority key and certificate.
+06.
+[certificates] Generated API Server key and certificate
+07.
+[certificates] Generated Service Account signing keys
+08.
+[certificates] Created keys and certificates in "/etc/kubernetes/pki"
+09.
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/kubelet.conf"
+10.
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/admin.conf"
+11.
+[apiclient] Created API client, waiting for the control plane to become ready
+12.
+[apiclient] All control plane components are healthy after 550.795507 seconds
+13.
+[apiclient] Waiting for at least one node to register and become ready
+14.
+[apiclient] First node is ready after 3.002701 seconds
+15.
+[apiclient] Creating a test deployment
+16.
+[apiclient] Test deployment succeeded
+17.
+[token-discovery] Created the kube-discovery deployment, waiting for it to become ready
+18.
+[token-discovery] kube-discovery is ready after 533.505279 seconds
+19.
+[addons] Created essential addon: kube-proxy
+20.
+[addons] Created essential addon: kube-dns
+21.
+Your Kubernetes master has initialized successfully!
+22.
+You should now deploy a pod network to the cluster.
+23.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+24.
+http://kubernetes.io/docs/admin/addons/
+25.
+You can now join any number of machines by running the following on each node:
+26.
+kubeadm join --token=4e4f80.fb6c903e351fb64c 192.168.43.199
+Above token is important as it will be used for joining outher nodes in cluster.
+
+8. By default Kubernetes will not start pods on master nodes for security reason you can remove this security if you are going to use single node.
+
+view sourceprint?
+1.
+# kubectl taint nodes --all dedicated-
+9. Run below command for flannel networking services:
+
+view sourceprint?
+1.
+# export ARCH=amd64
+2.
+# curl -sSL "https://github.com/coreos/flannel/blob/master/Documentation/kube-flannel.yml?raw=true" | sed "s/amd64/${ARCH}/g" | kubectl create -f -
+10. Now wait for some more minutes and check all pods status.
+
+view sourceprint?
+1.
+# kubectl get pods --all-namespaces
